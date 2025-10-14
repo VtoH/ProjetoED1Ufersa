@@ -1,0 +1,5 @@
+Relatório por Status: Entregue
+==============================
+ID  | Placa   | Data       | Descrição
+----|---------|------------|----------
+1   | AAA1111 | 14/04/2000 | prontin

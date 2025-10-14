@@ -1,0 +1,7 @@
+Clientes Mais Recorrentes
+==========================
+
+Ranking de Clientes Mais Recorrentes:
+Pos | Nome                     | CPF           | Ordens
+----|--------------------------|---------------|-------
+1   | muammar gaddafi          | 222.222.222-22 | 1

@@ -545,6 +545,16 @@ struct ordemServico* searchOrderById(int id) {
     return NULL;
 }
 
+void escreverRelatorio(const char* nomeArquivo, const char* conteudo) {
+    FILE *arquivo = fopen(nomeArquivo, "a");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir arquivo de relatório: %s\n", nomeArquivo);
+        return;
+    }
+    fprintf(arquivo, "%s", conteudo);
+    fclose(arquivo);
+}
+
 //funções principais
 
 void AddCliente (){
@@ -897,6 +907,7 @@ void AddVeiculo (){
     strcpy(AddV.propCpf, AddP->CPF);
 
     while ((c = getchar()) != '\n' && c != EOF);
+    
     do{
         printf("Placa: ");
         fgets(AddV.Placa, sizeof(AddV.Placa), stdin);
@@ -1697,8 +1708,10 @@ void EditService() {
 
 //funções dos relatorios
 
-void HistoricoServicosVeiculo (){
+void HistoricoServicosVeiculo() {
     char placa[8];
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
     printf("=== HISTÓRICO DE SERVIÇOS DO VEÍCULO ===\n");
     printf("Digite a placa do veículo: ");
     fgets(placa, sizeof(placa), stdin);
@@ -1708,8 +1721,25 @@ void HistoricoServicosVeiculo (){
         placa[i] = toupper(placa[i]);
     }
 
+    // Limpar arquivo anterior
+    remove("historico_veiculo.txt");
+    
+    // Escrever cabeçalho
+    FILE *txtFile = fopen("historico_veiculo.txt", "w");
+    if (txtFile == NULL) {
+        printf("Erro ao criar arquivo de relatório!\n");
+        return;
+    }
+    
+    fprintf(txtFile, "Histórico de Serviços - Placa: %s\n", placa);
+    fprintf(txtFile, "==========================================\n");
+    fprintf(txtFile, "ID  | Data       | Status            | Descrição\n");
+    fprintf(txtFile, "----|------------|-------------------|----------\n");
+    fclose(txtFile);
+
     FILE *arquivo = fopen("ordens_servico.csv", "r");
     if (arquivo == NULL) {
+        escreverRelatorio("historico_veiculo.txt", "Nenhuma ordem de serviço cadastrada!\n");
         printf("Nenhuma ordem de serviço cadastrada!\n");
         return;
     }
@@ -1719,11 +1749,7 @@ void HistoricoServicosVeiculo (){
 
     fgets(linha, sizeof(linha), arquivo);
 
-    printf("\nHistórico para placa %s:\n", placa);
-    printf("ID  | Data       | Status            | Descrição\n");
-    printf("----|------------|-------------------|----------\n");
-
-     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
         char linhaCopy[600];
         strcpy(linhaCopy, linha);
         linhaCopy[strcspn(linhaCopy, "\n")] = '\0';
@@ -1747,18 +1773,25 @@ void HistoricoServicosVeiculo (){
                 default: statusTexto = "Desconhecido";
             }
             
-            printf("%-3s | %-10s | %-17s | %s\n", idStr, data, statusTexto, descricao);
+            char buffer[600];
+            sprintf(buffer, "%-3s | %-10s | %-17s | %s\n", idStr, data, statusTexto, descricao);
+            escreverRelatorio("historico_veiculo.txt", buffer);
         }
     }
     
     fclose(arquivo);
     
     if (!encontrou) {
-        printf("Nenhum serviço encontrado para esta placa.\n");
+        escreverRelatorio("historico_veiculo.txt", "Nenhum serviço encontrado para esta placa.\n");
     }
-};
+    
+    printf("Relatório salvo em: historico_veiculo.txt\n");
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
 void VeiculosPerCliente(){
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
     char cpf[15];
     printf("=== VEÍCULOS POR CLIENTE ===\n");
     printf("Digite o CPF do cliente: ");
@@ -1775,12 +1808,26 @@ void VeiculosPerCliente(){
         printf("Cliente não encontrado!\n");
         return;
     }
-    printf("\nVeículos do cliente: %s\n", cliente->Nome);
-    printf("CPF: %s\n", cliente->CPF);
+
+    remove("veiculos_cliente.txt");
+    
+    FILE *txtFile = fopen("veiculos_cliente.txt", "w");
+    if (txtFile == NULL) {
+        printf("Erro ao criar arquivo de relatório!\n");
+        free(cliente);
+        return;
+    }
+
+    fprintf(txtFile, "Veículos do Cliente: %s\n", cliente->Nome);
+    fprintf(txtFile, "CPF: %s\n", cliente->CPF);
+    fprintf(txtFile, "================================\n\n");
+    fprintf(txtFile, "Placa   | Modelo               | Ano\n");
+    fprintf(txtFile, "--------|----------------------|-----\n");
+    fclose(txtFile);
 
     FILE *arquivo = fopen("veiculos.csv", "r");
     if (arquivo == NULL) {
-        printf("Nenhum veículo cadastrado!\n");
+        escreverRelatorio("veiculos_cliente.txt", "Nenhum veículo cadastrado!\n");
         free(cliente);
         return;
     }
@@ -1790,10 +1837,7 @@ void VeiculosPerCliente(){
 
     fgets(linha, sizeof(linha), arquivo);
 
-    printf("Placa   | Modelo               | Ano\n");
-    printf("--------|----------------------|-----\n");
-
-        while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
         char linhaCopy[300];
         strcpy(linhaCopy, linha);
         linhaCopy[strcspn(linhaCopy, "\n")] = '\0';
@@ -1812,7 +1856,9 @@ void VeiculosPerCliente(){
             if (strcmp(cpfArqClean, cpfClean) == 0) {
                 encontrou = 1;
                 int ano = atoi(anoStr);
-                printf("%-7s | %-20s | %-4d\n", placa, modelo, ano);
+                char buffer[300];
+                sprintf(buffer, "%-7s | %-20s | %-4d\n", placa, modelo, ano);
+                escreverRelatorio("veiculos_cliente.txt", buffer);
             }
         }
     }
@@ -1820,14 +1866,18 @@ void VeiculosPerCliente(){
     fclose(arquivo);
     
     if (!encontrou) {
-        printf("Nenhum veículo encontrado para este cliente.\n");
+        escreverRelatorio("veiculos_cliente.txt", "Nenhum veículo encontrado para este cliente.\n");
     }
     
     free(cliente);
-};
+    printf("Relatório salvo em: veiculos_cliente.txt\n");
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
 void RelatorioPerStatus(){
     int status;
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
     printf("=== RELATÓRIO POR STATUS ===\n");
     printf("0 - Aguardando Avaliação\n");
     printf("1 - Em Reparo\n");
@@ -1851,9 +1901,23 @@ void RelatorioPerStatus(){
         default: statusTexto = "Desconhecido";
     }
 
+    remove("relatorio_status.txt");
+    
+    FILE *txtFile = fopen("relatorio_status.txt", "w");
+    if (txtFile == NULL) {
+        printf("Erro ao criar arquivo de relatório!\n");
+        return;
+    }
+
+    fprintf(txtFile, "Relatório por Status: %s\n", statusTexto);
+    fprintf(txtFile, "==============================\n");
+    fprintf(txtFile, "ID  | Placa   | Data       | Descrição\n");
+    fprintf(txtFile, "----|---------|------------|----------\n");
+    fclose(txtFile);
+
     FILE *arquivo = fopen("ordens_servico.csv", "r");
     if (arquivo == NULL) {
-        printf("Nenhuma ordem de serviço cadastrada!\n");
+        escreverRelatorio("relatorio_status.txt", "Nenhuma ordem de serviço cadastrada!\n");
         return;
     }
 
@@ -1862,9 +1926,6 @@ void RelatorioPerStatus(){
 
     fgets(linha, sizeof(linha), arquivo);
     
-    printf("\nOrdens com status: %s\n", statusTexto);
-    printf("ID  | Placa   | Data       | Descrição\n");
-    printf("----|---------|------------|----------\n");
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
         char linhaCopy[600];
         strcpy(linhaCopy, linha);
@@ -1878,33 +1939,51 @@ void RelatorioPerStatus(){
 
         if (statusStr != NULL && atoi(statusStr) == status) {
             encontrou = true;
-            printf("%-3s | %-7s | %-10s | %s\n", idStr, placa, data, descricao);
+            char buffer[600];
+            sprintf(buffer, "%-3s | %-7s | %-10s | %s\n", idStr, placa, data, descricao);
+            escreverRelatorio("relatorio_status.txt", buffer);
         }
     }
     
     fclose(arquivo);
     
     if (!encontrou) {
-        printf("Nenhuma ordem encontrada com este status.\n");
+        escreverRelatorio("relatorio_status.txt", "Nenhuma ordem encontrada com este status.\n");
     }
-};
+    
+    printf("Relatório salvo em: relatorio_status.txt\n");
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
 void ClientesRecorrentes() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
     printf("=== CLIENTES MAIS RECORRENTES ===\n");
 
+    remove("clientes_recorrentes.txt");
+    
+    FILE *txtFile = fopen("clientes_recorrentes.txt", "w");
+    if (txtFile == NULL) {
+        printf("Erro ao criar arquivo de relatório!\n");
+        return;
+    }
+
+    fprintf(txtFile, "Clientes Mais Recorrentes\n");
+    fprintf(txtFile, "==========================\n\n");
+    fclose(txtFile);
+    
     FILE *arquivoClientes = fopen("clientes.csv", "r");
     FILE *arquivoOrdens = fopen("ordens_servico.csv", "r");
     FILE *arquivoVeiculos = fopen("veiculos.csv", "r");
     
     if (arquivoClientes == NULL || arquivoOrdens == NULL || arquivoVeiculos == NULL) {
-        printf("Erro ao abrir arquivos necessários!\n");
+        escreverRelatorio("clientes_recorrentes.txt", "Erro ao abrir arquivos necessários!\n");
         if (arquivoClientes) fclose(arquivoClientes);
         if (arquivoOrdens) fclose(arquivoOrdens);
         if (arquivoVeiculos) fclose(arquivoVeiculos);
         return;
     }
 
-    // Estrutura para contar ordens por cliente
     typedef struct {
         char cpf[15];
         char nome[100];
@@ -1916,7 +1995,7 @@ void ClientesRecorrentes() {
 
     // Ler clientes
     char linha[300];
-    fgets(linha, sizeof(linha), arquivoClientes); // Pular cabeçalho
+    fgets(linha, sizeof(linha), arquivoClientes);
     
     while (fgets(linha, sizeof(linha), arquivoClientes) != NULL && numClientes < 1000) {
         char linhaCopy[300];
@@ -1937,7 +2016,7 @@ void ClientesRecorrentes() {
     fclose(arquivoClientes);
 
     // Contar ordens por cliente
-    fgets(linha, sizeof(linha), arquivoOrdens); // Pular cabeçalho
+    fgets(linha, sizeof(linha), arquivoOrdens);
     
     while (fgets(linha, sizeof(linha), arquivoOrdens) != NULL) {
         char linhaCopy[600];
@@ -1947,10 +2026,8 @@ void ClientesRecorrentes() {
         char *placa = strtok(linhaCopy, ",");
         
         if (placa) {
-            // Buscar veículo pela placa para obter o CPF do proprietário
             struct Veiculo *veiculo = searchVeiByPlaca(placa);
             if (veiculo != NULL) {
-                // Encontrar cliente correspondente
                 for (int i = 0; i < numClientes; i++) {
                     char cpfVeiculoClean[12];
                     char cpfClienteClean[12];
@@ -1969,7 +2046,7 @@ void ClientesRecorrentes() {
     fclose(arquivoOrdens);
     fclose(arquivoVeiculos);
 
-    // Ordenar clientes por número de ordens (decrescente)
+    // Ordenar clientes
     for (int i = 0; i < numClientes - 1; i++) {
         for (int j = i + 1; j < numClientes; j++) {
             if (clientes[i].count < clientes[j].count) {
@@ -1980,25 +2057,32 @@ void ClientesRecorrentes() {
         }
     }
 
-    // Exibir resultado
-    printf("\nRanking de Clientes Mais Recorrentes:\n");
-    printf("Pos | Nome                     | CPF           | Ordens\n");
-    printf("----|--------------------------|---------------|-------\n");
+    // Escrever cabeçalho da tabela
+    escreverRelatorio("clientes_recorrentes.txt", "Ranking de Clientes Mais Recorrentes:\n");
+    escreverRelatorio("clientes_recorrentes.txt", "Pos | Nome                     | CPF           | Ordens\n");
+    escreverRelatorio("clientes_recorrentes.txt", "----|--------------------------|---------------|-------\n");
     
     int maxExibir = (numClientes > 10) ? 10 : numClientes;
     for (int i = 0; i < maxExibir; i++) {
         if (clientes[i].count > 0) {
-            printf("%-3d | %-24s | %-13s | %d\n", 
+            char buffer[200];
+            sprintf(buffer, "%-3d | %-24s | %-13s | %d\n", 
                    i + 1, clientes[i].nome, clientes[i].cpf, clientes[i].count);
+            escreverRelatorio("clientes_recorrentes.txt", buffer);
         }
     }
     
     if (maxExibir == 0) {
-        printf("Nenhuma ordem de serviço encontrada.\n");
+        escreverRelatorio("clientes_recorrentes.txt", "Nenhuma ordem de serviço encontrada.\n");
     }
-};
+    
+    printf("Relatório salvo em: clientes_recorrentes.txt\n");
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
-void ServicePerData(){
+void ServicePerData() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
     char data[11];
     printf("=== ORDENS DE SERVIÇO POR DATA ===\n");
     printf("Digite a data (DD/MM/AAAA): ");
@@ -2010,8 +2094,23 @@ void ServicePerData(){
         return;
     }
 
+    remove("ordens_data.txt");
+    
+    FILE *txtFile = fopen("ordens_data.txt", "w");
+    if (txtFile == NULL) {
+        printf("Erro ao criar arquivo de relatório!\n");
+        return;
+    }
+    
+    fprintf(txtFile, "Ordens de Serviço - Data: %s\n", data);
+    fprintf(txtFile, "================================\n");
+    fprintf(txtFile, "ID  | Placa   | Status            | Descrição\n");
+    fprintf(txtFile, "----|---------|-------------------|----------\n");
+    fclose(txtFile);
+
     FILE *arquivo = fopen("ordens_servico.csv", "r");
     if (arquivo == NULL) {
+        escreverRelatorio("ordens_data.txt", "Nenhuma ordem de serviço cadastrada!\n");
         printf("Nenhuma ordem de serviço cadastrada!\n");
         return;
     }
@@ -2020,10 +2119,6 @@ void ServicePerData(){
     int encontrou = 0;
     
     fgets(linha, sizeof(linha), arquivo);
-    
-    printf("\nOrdens para %s:\n", data);
-    printf("ID  | Placa   | Status            | Descrição\n");
-    printf("----|---------|-------------------|----------\n");
 
     while (fgets(linha, sizeof(linha), arquivo) != NULL) {
         char linhaCopy[600];
@@ -2049,16 +2144,21 @@ void ServicePerData(){
                 default: statusTexto = "Desconhecido";
             }
             
-            printf("%-3s | %-7s | %-17s | %s\n", idStr, placa, statusTexto, descricao);
+            char buffer[600];
+            sprintf(buffer, "%-3s | %-7s | %-17s | %s\n", idStr, placa, statusTexto, descricao);
+            escreverRelatorio("ordens_data.txt", buffer);
         }
     }
     
     fclose(arquivo);
     
     if (!encontrou) {
-        printf("Nenhuma ordem encontrada para esta data.\n");
+        escreverRelatorio("ordens_data.txt", "Nenhuma ordem encontrada para esta data.\n");
     }
-};
+    
+    printf("Relatório salvo em: ordens_data.txt\n");
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
 //menus
 
@@ -2264,7 +2364,7 @@ int main(){
                 break;
             case 5:
                 printf("\nObrigado por usar o Sistema Oficina Rock Rural!\n");
-                printf("Até a próxima! Vrau vrau!\n");
+                printf("Até a próxima!\n");
                 break;
             default:
                 printf("Opção inválida! Digite um número entre 1 e 5.\n");

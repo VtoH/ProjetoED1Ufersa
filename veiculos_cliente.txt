@@ -1,0 +1,7 @@
+Veículos do Cliente: muammar gaddafi
+CPF: 222.222.222-22
+================================
+
+Placa   | Modelo               | Ano
+--------|----------------------|-----
+AAA1111 | Karro Marx           | 1900
