@@ -83,6 +83,7 @@ Porque:
 
 **Problemas no buffer:**
 - As vezes precisa apertar Enter novamente depois de algumas mensagens
+- Possivelmente corrigido.
 
 **Problema em alocação de memoria:**
 - Não identificado até agora, mas possível
