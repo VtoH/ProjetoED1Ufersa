@@ -2,7 +2,7 @@
 
 ║                🛠️ OFICINA - ROCK RURAL 🛠️             ║
 
-╚═════════════════════════════╝
+╚══════════════════════╝
 
 ## Ambiente de Desenvolvimento
 **Sistema Operacional:** Manjaro Linux XFCE (base Arch)  
