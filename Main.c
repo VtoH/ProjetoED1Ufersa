@@ -13,16 +13,16 @@
     struct Cliente
 {
     char Nome[100];
-    char CPF[15];
+    char CPF[15]; //K Unique
     char Cell[20]; 
 };
 
     struct Veiculo
 {
-    char Placa[8];
+    char Placa[8]; //K Unique
     char modelo[100];
     int ano;
-    char propCpf[15];
+    char propCpf[15]; //Fk
 };
 
     typedef enum {
@@ -34,15 +34,53 @@
 
     struct ordemServico
 {
-    char Placa[8];
+    char Placa[8]; //Fk Unique
     Status status;
-    int id;
+    int id; //K Unique
     char DescProblem[500];
     char DataEntrada[11];
 };
 
+
 //funções de suporte
 
+//verifica se os arquivos existem, se não existir cria.
+void CreatArq() {
+    FILE *file = fopen("clientes.csv", "r");
+    if (file == NULL) {
+        file = fopen("clientes.csv", "w");
+        if (file != NULL) {
+            fprintf(file, "Nome,CPF,Telefone\n");
+            fclose(file);
+        }
+    } else {
+        fclose(file);
+    }
+    
+    file = fopen("veiculos.csv", "r");
+    if (file == NULL) {
+        file = fopen("veiculos.csv", "w");
+        if (file != NULL) {
+            fprintf(file, "Placa,Modelo,Ano,CPF\n");
+            fclose(file);
+        }
+    } else {
+        fclose(file);
+    }
+    
+    file = fopen("ordens_servico.csv", "r");
+    if (file == NULL) {
+        file = fopen("ordens_servico.csv", "w");
+        if (file != NULL) {
+            fprintf(file, "Placa,Status,ID,Descricao,DataEntrada\n");
+            fclose(file);
+        }
+    } else {
+        fclose(file);
+    }
+};
+
+//verifica o numero de celular pela quantidade de digitos e se são todos inteiros.
 bool VeriCell(const char *cell){
 
     if (cell == NULL) return false;
@@ -67,6 +105,7 @@ bool VeriCell(const char *cell){
     return (DigitCount == 11 || DigitCount == 10);
 };
 
+//verifica a placa pela quantidade de digitos e posionamento dos mesmos
 bool VeriPlaca (const char *placa){
     if(placa == NULL) return false;
     int comprimento = strlen(placa);
@@ -100,6 +139,7 @@ bool VeriPlaca (const char *placa){
     return pA;
 };
 
+//verifica o CPF pela quantidade de digitos e se são todos inteiros.
 bool VeriCpf(const char *cpf){
     if (cpf == NULL) return false;
     int digitos = 0;
@@ -121,6 +161,7 @@ bool VeriCpf(const char *cpf){
     return digitos==11;
 };
 
+//verifica o mes, os dias do mes com base no dia e no ano.
 bool VeriDate(const char *date) {
     if (strlen(date) != 10) return false;
     if (date[2] != '/' || date[5] != '/') return false;
@@ -141,6 +182,7 @@ bool VeriDate(const char *date) {
     return true;
 };
 
+//função que tira a formatação do cpf para facilitar a vida
 void cleanCpf(const char *cpf, char *cleanCpf) {
     int j = 0;
     for (int i = 0; cpf[i] != '\0' && j < 11; i++) {
@@ -152,6 +194,7 @@ void cleanCpf(const char *cpf, char *cleanCpf) {
     cleanCpf[j] = '\0';             
 };
 
+//função que adiciona a formatação do cpf para ficar bonitinho
 void formataCpf(const char *cpf, char *cpfformatado){
     char Cpflimpo[12] = {0};
     cleanCpf(cpf, Cpflimpo);
@@ -163,6 +206,7 @@ void formataCpf(const char *cpf, char *cpfformatado){
     }
 };
 
+//procura o cliente pelo CPF informado pelo user e retorna todas as infos do cliente.
 struct Cliente* searchPropByCpf(const char *searchCpf){
     FILE *arqv = fopen("clientes.csv", "r");
     if (arqv == NULL) {
@@ -220,6 +264,7 @@ struct Cliente* searchPropByCpf(const char *searchCpf){
     return NULL;
 };
 
+//procura o Veiculo pela placa informado pelo user e retorna todas as infos do Veiculo.
 struct Veiculo* searchVeiByPlaca(const char *placa){
     if (placa == NULL) return NULL;
     
@@ -277,6 +322,7 @@ struct Veiculo* searchVeiByPlaca(const char *placa){
     return NULL;
 };
 
+//recebe uma placa e verifica se ela ja esta cadastrada no CSV
 bool PlacaExist(const char *placa) {
     struct Veiculo *veiculo = searchVeiByPlaca(placa);
     if (veiculo != NULL) {
@@ -286,6 +332,7 @@ bool PlacaExist(const char *placa) {
     return false;
 };
 
+//recebe um CPF e verifica se ele ja esta cadastrada no CSV
 bool CpfExist (const char *cpf){
     struct Cliente *cliente = searchPropByCpf(cpf);
     if(cliente != NULL){
@@ -295,6 +342,7 @@ bool CpfExist (const char *cpf){
     return false;
 };
 
+//procura o ultimo ID para o ID do proximo serviço
 int getLastOrderID() {
     FILE *file = fopen("ordens_servico.csv", "r");
     if (file == NULL) {
@@ -325,8 +373,9 @@ int getLastOrderID() {
     
     fclose(file);
     return maxID;
-}
+};
 
+//pos remover um serviço essa função re-ve todos os ID's e os re-organiza
 void RenumberOrderIDs() {
     FILE *arquivo = fopen("ordens_servico.csv", "r");
     if (arquivo == NULL) {
@@ -405,6 +454,7 @@ void RenumberOrderIDs() {
     fclose(arquivo);
 };
 
+//lista todos os veiculos
 void ListVeiculos() {
     FILE *arquivo = fopen("veiculos.csv", "r");
     if (arquivo == NULL) {
@@ -457,6 +507,7 @@ void ListVeiculos() {
     }
 };
 
+//função que retorna quantos veiculos um Cliente possui pelo CPF dele.
 int countVeiculos(const char *cpf){
     FILE *arquivo = fopen("veiculos.csv", "r");
     if (arquivo == NULL) {
@@ -494,6 +545,7 @@ int countVeiculos(const char *cpf){
 
 };
 
+//retorna as infos de um serviço passando o ID do mesmo.
 struct ordemServico* searchOrderById(int id) {
     FILE *arquivo = fopen("ordens_servico.csv", "r");
     if (arquivo == NULL) {
@@ -543,8 +595,9 @@ struct ordemServico* searchOrderById(int id) {
     fclose(arquivo);
     free(ordem);
     return NULL;
-}
+};
 
+//função que escreve nos relatorios, recebe em QUAL arquivo e o O QUE ESCREVER.
 void escreverRelatorio(const char* nomeArquivo, const char* conteudo) {
     FILE *arquivo = fopen(nomeArquivo, "a");
     if (arquivo == NULL) {
@@ -553,10 +606,11 @@ void escreverRelatorio(const char* nomeArquivo, const char* conteudo) {
     }
     fprintf(arquivo, "%s", conteudo);
     fclose(arquivo);
-}
+};
 
 //funções principais
 
+//Adciona um cliente
 void AddCliente (){
     char CPFForm[15];
     struct Cliente AddC;
@@ -591,7 +645,6 @@ void AddCliente (){
         AddC.Cell[strcspn(AddC.Cell, "\n")] = '\0';
 
             if (VeriCell(AddC.Cell)){
-                AddC.Cell[strcspn(AddC.Cell, "\n")] = '\0';
                 break;
             }
             else{
@@ -620,6 +673,7 @@ void AddCliente (){
         printf("Cliente %s Adicionado com Sucesso\n", AddC.Nome);
 };
 
+//Remove um cliente pelo CPF dele e verifica se o CPF tem algum carro cadastrado se sim não permite a exclusão
 void RemoveCliente() {
     char cpf[15];
     int c;
@@ -731,6 +785,7 @@ void RemoveCliente() {
     free(cliente);
 };
 
+//função para editar nome ou numero de telefone de um cliente
 void EditCliente(){
     int c;
     char cpf[15];
@@ -884,6 +939,7 @@ void EditCliente(){
     free(cliente);
 };
 
+//Adiciona um veiculo
 void AddVeiculo (){
     int c;
     char ComperCpf[15];
@@ -957,6 +1013,7 @@ void AddVeiculo (){
     free(AddP);
 };
 
+//Remove um veiculo pela placa, se houver algum serviço não permite a exclusão.
 void RemoveVeiculo() {
     char placa[8];
     char line[300];
@@ -1101,6 +1158,7 @@ void RemoveVeiculo() {
     free(veiculo);
 };
 
+//Transfere o veiculo para outro cliente por meio do CPF do antigo e novo dono
 void TransfVeiculo() {
     char placa[8];
     char novoCpf[15];
@@ -1262,6 +1320,7 @@ void TransfVeiculo() {
     free(novoProprietario);
 };
 
+//Adiciona um novo serviço
 void AddService(){
     int c;
     char comperPlaca[8];
@@ -1343,6 +1402,7 @@ void AddService(){
     free(AddV);
 };
 
+//Remove um serviço pelo ID
 void RemoveService() {
     int c;
     int idToRemove;
@@ -1497,6 +1557,7 @@ void RemoveService() {
     printf("IDs renumerados com sucesso!\n");
 };
 
+//Edita a descrição e o status pelo ID do serviço.
 void EditService() {
     int id;
     char line[600];
@@ -1512,7 +1573,7 @@ void EditService() {
         while ((c = getchar()) != '\n' && c != EOF);
         return;
     }
-    
+    while ((c = getchar()) != '\n' && c != EOF);
     
     
     struct ordemServico *ordem = searchOrderById(id);
@@ -1701,6 +1762,7 @@ void EditService() {
 
 //funções dos relatorios
 
+//pede uma placa e retorna todos os serviços que tem essa FK cadastradas
 void HistoricoServicosVeiculo() {
     char placa[8];
     int c;
@@ -1778,8 +1840,9 @@ void HistoricoServicosVeiculo() {
     }
     
     printf("Relatório salvo em: historico_veiculo.txt\n");
-}
+};
 
+//pede um CPF e retorna todos os veiculos que tem essa FK cadastradas
 void VeiculosPerCliente(){
     int c;
     char cpf[15];
@@ -1861,8 +1924,9 @@ void VeiculosPerCliente(){
     
     free(cliente);
     printf("Relatório salvo em: veiculos_cliente.txt\n");
-}
+};
 
+//Apresenta todos os relatorios com o status informado
 void RelatorioPerStatus(){
     int status;
     int c;
@@ -1878,6 +1942,7 @@ void RelatorioPerStatus(){
         while ((c = getchar()) != '\n' && c != EOF);
         return;
     }
+    while ((c = getchar()) != '\n' && c != EOF);
 
     char *statusTexto;
     switch(status) {
@@ -1939,8 +2004,9 @@ void RelatorioPerStatus(){
     }
     
     printf("Relatório salvo em: relatorio_status.txt\n");
-}
+};
 
+//Verifica qual cliente possui o maior numero de serviços e cria uma tierlist do cliente com mais para o com menos serviços.
 void ClientesRecorrentes() {
     int c;
     printf("=== CLIENTES MAIS RECORRENTES ===\n");
@@ -2062,8 +2128,9 @@ void ClientesRecorrentes() {
     }
     
     printf("Relatório salvo em: clientes_recorrentes.txt\n");
-}
+};
 
+//serviços em uma data informada.
 void ServicePerData() {
     int c;
     char data[11];
@@ -2140,7 +2207,7 @@ void ServicePerData() {
     }
     
     printf("Relatório salvo em: ordens_data.txt\n");
-}
+};
 
 //menus
 
@@ -2156,6 +2223,7 @@ void exibirMenu() {
     printf("5. SAIR\n");
     printf("\nEscolha uma opção: ");
 };
+
 void menuClientes() {
     int c;
     int opcao;
@@ -2189,7 +2257,7 @@ void menuClientes() {
                 printf("Opção inválida! Tente novamente.\n");
         }
     } while (opcao != 4);
-}
+};
 
 void menuVeiculos() {
     int opcao;
@@ -2228,7 +2296,7 @@ void menuVeiculos() {
                 printf("Opção inválida! Tente novamente.\n");
         }
     } while (opcao != 5);
-}
+};
 
 void menuServicos() {
     int c;
@@ -2263,7 +2331,7 @@ void menuServicos() {
                 printf("Opção inválida! Tente novamente.\n");
         }
     } while (opcao != 4);
-}
+};
 
 void menuRelatorios() {
     int c;
@@ -2306,9 +2374,10 @@ void menuRelatorios() {
                 printf("Opção inválida! Tente novamente.\n");
         }
     } while (opcao != 6);
-}
+};
 
 int main(){
+    CreatArq();
     int opcao;
     int c;
     
