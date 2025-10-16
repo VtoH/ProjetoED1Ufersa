@@ -26,21 +26,21 @@
 ### verificações de Cliente:
 - **CPF:** verifica APENAS a QUANTIDADE(11 inteiros) e o TIPO colocado (Ignora . é -)
   - ✅ **Funcionais:** 666.666.666-66 é 11111111111
-  - ❌ **Não funcionam:** 666.666.AAA-66, 666.666.66-66 é 666.666.666-666
+  - ❌ **Não funcionam (teoricamente):** 666.666.AAA-66, 666.666.66-66 é 666.666.666-666
 
 - **Telefone:** verifica o TIPO e a QUANTIDADE(10 ou 11 inteiros) (Ignora " ",-,(,))
   - ✅ **Funcionais:** 21212121212, (21)212121212 e etc
-  - ❌ **Não funcionam:** 21212121AAA, (21)2121212122121 é (21)21212
+  - ❌ **Não funcionam(teoricamente):** (teoricamente) 21212121AAA, (21)2121212122121 é (21)21212
 
 ### verificações de Veiculos:
 - **Placa:** verificação com base nos 2 sistemas de placas (Merco-Sul: LLL NLNN; Antigo: LLLNNNN)
   - ✅ **Funcionais:** AAA1111 é AAA1A11
-  - ❌ **Não funcionam:** AAA111A, AAAAAAA é 7777777
+  - ❌ **Não funcionam (teoricamente):** AAA111A, AAAAAAA é 7777777
 
 ### verificações de Serviços:
 - **Data:** considera ano bisexto e dias do més, obriga usar as / na data
   - ✅ **Funcionais:** 12/12/2012 é 18/05/2004
-  - ❌ **Não funcionam:** AA/12/2012, 12/12/1500 é 12/12/2026
+  - ❌ **Não funcionam (teoricamente):** AA/12/2012, 12/12/1500 é 12/12/2026
 
 ## ITENS IMUTÁVEIS NO SISTEMA PELO USER
 
