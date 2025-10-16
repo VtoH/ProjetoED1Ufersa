@@ -618,7 +618,6 @@ void AddCliente (){
         );
         fclose(arquivo);
         printf("Cliente %s Adicionado com Sucesso\n", AddC.Nome);
-        while ((c = getchar()) != '\n' && c != EOF);
 };
 
 void RemoveCliente() {
@@ -659,7 +658,7 @@ void RemoveCliente() {
     
     printf("\nTem certeza que deseja remover este cliente? (S/N): ");
     char confirmacao = getchar();
-    while (getchar() != '\n');
+    while ((c = getchar()) != '\n' && c != EOF);
     
     if (confirmacao != 'S' && confirmacao != 's') {
         printf("Remoção cancelada.\n");
@@ -713,7 +712,6 @@ void RemoveCliente() {
         } else {
             fprintf(arquivoClientesTemp, "%s", line);
         }
-        while ((c = getchar()) != '\n' && c != EOF);
     }
     
     fclose(arquivoClientesOrig);
@@ -734,6 +732,7 @@ void RemoveCliente() {
 };
 
 void EditCliente(){
+    int c;
     char cpf[15];
     char line[300];
 
@@ -799,7 +798,7 @@ void EditCliente(){
     
     printf("\nConfirmar edição? (S/N): ");
     char confirmacao = getchar();
-    while (getchar() != '\n');
+    while ((c = getchar()) != '\n' && c != EOF);
     
     if (confirmacao != 'S' && confirmacao != 's') {
         printf("Edição cancelada.\n");
@@ -905,8 +904,6 @@ void AddVeiculo (){
     printf("Proprietario encontrado!\n");
 
     strcpy(AddV.propCpf, AddP->CPF);
-
-    while ((c = getchar()) != '\n' && c != EOF);
     
     do{
         printf("Placa: ");
@@ -958,7 +955,6 @@ void AddVeiculo (){
 
     printf("Veículo cadastrado com sucesso!\n");
     free(AddP);
-    while ((c = getchar()) != '\n' && c != EOF);
 };
 
 void RemoveVeiculo() {
@@ -1026,10 +1022,9 @@ void RemoveVeiculo() {
         free(proprietario);
     }
     
-    while (getchar() != '\n'); // Limpar buffer
     printf("\nTem certeza que deseja remover este veiculo? (S/N): ");
     char confirmacao = getchar();
-    while (getchar() != '\n'); // Limpar buffer
+    while ((c = getchar()) != '\n' && c != EOF);
     
     if (confirmacao != 'S' && confirmacao != 's') {
         printf("Remocao cancelada.\n");
@@ -1104,7 +1099,6 @@ void RemoveVeiculo() {
     
     printf("Veiculo %s removido com sucesso!\n", placa);
     free(veiculo);
-    while ((c = getchar()) != '\n' && c != EOF);
 };
 
 void TransfVeiculo() {
@@ -1142,7 +1136,6 @@ void TransfVeiculo() {
         printf("Proprietario Atual: %s\n", proprietarioAtual->Nome);
         free(proprietarioAtual);
     }
-    while ((c = getchar()) != '\n' && c != EOF);
     printf("\nDigite o CPF do novo proprietario: ");
     fgets(novoCpf, sizeof(novoCpf), stdin);
     novoCpf[strcspn(novoCpf, "\n")] = '\0';
@@ -1165,7 +1158,7 @@ void TransfVeiculo() {
     printf("\nConfirmar transferencia do veiculo %s para %s? (S/N): ", 
            veiculo->Placa, novoProprietario->Nome);
     char confirmacao = getchar();
-    while (getchar() != '\n');
+    while ((c = getchar()) != '\n' && c != EOF);
     
     if (confirmacao != 'S' && confirmacao != 's') {
         printf("Transferencia cancelada.\n");
@@ -1267,7 +1260,6 @@ void TransfVeiculo() {
     
     free(veiculo);
     free(novoProprietario);
-    while ((c = getchar()) != '\n' && c != EOF);
 };
 
 void AddService(){
@@ -1295,7 +1287,6 @@ void AddService(){
     printf("Veiculo encontrado!\n");
 
     strcpy(AddS.Placa, AddV->Placa);
-    while ((c = getchar()) != '\n' && c != EOF);
 
     do {
             printf("Digite a data (DD/MM/AAAA): ");
@@ -1353,6 +1344,7 @@ void AddService(){
 };
 
 void RemoveService() {
+    int c;
     int idToRemove;
     char line[600];
     bool found = false;
@@ -1410,10 +1402,10 @@ void RemoveService() {
     
     if (scanf("%d", &idToRemove) != 1) {
         printf("ID invalido!\n");
-        while (getchar() != '\n');
+        while ((c = getchar()) != '\n' && c != EOF);
         return;
     }
-    while (getchar() != '\n');
+    while ((c = getchar()) != '\n' && c != EOF);
     
     FILE *arquivoOriginal = fopen("ordens_servico.csv", "r");
     if (arquivoOriginal == NULL) {
@@ -1459,7 +1451,7 @@ void RemoveService() {
                 
                 printf("\nTem certeza que deseja remover esta ordem? (S/N): ");
                 char confirmacao = getchar();
-                while (getchar() != '\n');
+                while ((c = getchar()) != '\n' && c != EOF);
                 
                 if (confirmacao == 'S' || confirmacao == 's') {
                     printf("Ordem removida com sucesso!\n");
@@ -1508,6 +1500,7 @@ void RemoveService() {
 void EditService() {
     int id;
     char line[600];
+    int c;
     
     printf("=== EDITAR ORDEM DE SERVIÇO ===\n");
     
@@ -1516,12 +1509,12 @@ void EditService() {
     printf("\nDigite o ID da ordem de serviço a ser editada: ");
     if (scanf("%d", &id) != 1) {
         printf("ID inválido!\n");
-        while (getchar() != '\n');
+        while ((c = getchar()) != '\n' && c != EOF);
         return;
     }
-    while (getchar() != '\n'); // Limpar buffer
     
-    // Buscar ordem de serviço pelo ID
+    
+    
     struct ordemServico *ordem = searchOrderById(id);
     if (ordem == NULL) {
         printf("Ordem de serviço com ID %d não encontrada!\n", id);
@@ -1596,7 +1589,7 @@ void EditService() {
     
     printf("\nConfirmar edição? (S/N): ");
     char confirmacao = getchar();
-    while (getchar() != '\n');
+    while ((c = getchar()) != '\n' && c != EOF);
     
     if (confirmacao != 'S' && confirmacao != 's') {
         printf("Edição cancelada.\n");
@@ -1711,7 +1704,6 @@ void EditService() {
 void HistoricoServicosVeiculo() {
     char placa[8];
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
     printf("=== HISTÓRICO DE SERVIÇOS DO VEÍCULO ===\n");
     printf("Digite a placa do veículo: ");
     fgets(placa, sizeof(placa), stdin);
@@ -1786,12 +1778,10 @@ void HistoricoServicosVeiculo() {
     }
     
     printf("Relatório salvo em: historico_veiculo.txt\n");
-    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 void VeiculosPerCliente(){
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
     char cpf[15];
     printf("=== VEÍCULOS POR CLIENTE ===\n");
     printf("Digite o CPF do cliente: ");
@@ -1871,13 +1861,11 @@ void VeiculosPerCliente(){
     
     free(cliente);
     printf("Relatório salvo em: veiculos_cliente.txt\n");
-    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 void RelatorioPerStatus(){
     int status;
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
     printf("=== RELATÓRIO POR STATUS ===\n");
     printf("0 - Aguardando Avaliação\n");
     printf("1 - Em Reparo\n");
@@ -1887,10 +1875,9 @@ void RelatorioPerStatus(){
     
     if (scanf("%d", &status) != 1 || status < 0 || status > 3) {
         printf("Status inválido!\n");
-        while (getchar() != '\n');
+        while ((c = getchar()) != '\n' && c != EOF);
         return;
     }
-    while (getchar() != '\n');
 
     char *statusTexto;
     switch(status) {
@@ -1952,12 +1939,10 @@ void RelatorioPerStatus(){
     }
     
     printf("Relatório salvo em: relatorio_status.txt\n");
-    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 void ClientesRecorrentes() {
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
     printf("=== CLIENTES MAIS RECORRENTES ===\n");
 
     remove("clientes_recorrentes.txt");
@@ -2077,12 +2062,10 @@ void ClientesRecorrentes() {
     }
     
     printf("Relatório salvo em: clientes_recorrentes.txt\n");
-    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 void ServicePerData() {
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
     char data[11];
     printf("=== ORDENS DE SERVIÇO POR DATA ===\n");
     printf("Digite a data (DD/MM/AAAA): ");
@@ -2157,7 +2140,6 @@ void ServicePerData() {
     }
     
     printf("Relatório salvo em: ordens_data.txt\n");
-    while ((c = getchar()) != '\n' && c != EOF);
 }
 
 //menus
@@ -2175,6 +2157,7 @@ void exibirMenu() {
     printf("\nEscolha uma opção: ");
 };
 void menuClientes() {
+    int c;
     int opcao;
     do {
         printf("\n╔════════════════════════════════════════╗\n");
@@ -2187,7 +2170,7 @@ void menuClientes() {
         printf("\nEscolha uma opção: ");
         
         scanf("%d", &opcao);
-        while (getchar() != '\n'); 
+        while ((c = getchar()) != '\n' && c != EOF);
         
         switch(opcao) {
             case 1:
@@ -2210,6 +2193,7 @@ void menuClientes() {
 
 void menuVeiculos() {
     int opcao;
+    int c;
     do {
         printf("\n╔════════════════════════════════════════╗\n");
         printf("║            GESTÃO DE VEÍCULOS          ║\n");
@@ -2222,7 +2206,7 @@ void menuVeiculos() {
         printf("\nEscolha uma opção: ");
         
         scanf("%d", &opcao);
-        while (getchar() != '\n'); 
+        while ((c = getchar()) != '\n' && c != EOF);
         
         switch(opcao) {
             case 1:
@@ -2247,6 +2231,7 @@ void menuVeiculos() {
 }
 
 void menuServicos() {
+    int c;
     int opcao;
     do {
         printf("\n╔════════════════════════════════════════╗\n");
@@ -2259,7 +2244,7 @@ void menuServicos() {
         printf("\nEscolha uma opção: ");
         
         scanf("%d", &opcao);
-        while (getchar() != '\n'); 
+        while ((c = getchar()) != '\n' && c != EOF);
         
         switch(opcao) {
             case 1:
@@ -2281,6 +2266,7 @@ void menuServicos() {
 }
 
 void menuRelatorios() {
+    int c;
     int opcao;
     do {
         printf("\n╔════════════════════════════════════════╗\n");
@@ -2295,7 +2281,7 @@ void menuRelatorios() {
         printf("\nEscolha uma opção: ");
         
         scanf("%d", &opcao);
-        while (getchar() != '\n'); 
+        while ((c = getchar()) != '\n' && c != EOF);
         
         switch(opcao) {
             case 1:
@@ -2324,6 +2310,7 @@ void menuRelatorios() {
 
 int main(){
     int opcao;
+    int c;
     
     FILE *teste;
     
@@ -2344,10 +2331,10 @@ int main(){
         
         if (scanf("%d", &opcao) != 1) {
             printf("Entrada inválida! Digite um número.\n");
-            while (getchar() != '\n'); 
+            while ((c = getchar()) != '\n' && c != EOF); 
             continue;
         }
-        while (getchar() != '\n'); 
+        while ((c = getchar()) != '\n' && c != EOF); 
         
         switch(opcao) {
             case 1:
@@ -2373,4 +2360,3 @@ int main(){
     
     return 0;
 };
-
