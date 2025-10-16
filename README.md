@@ -30,7 +30,7 @@
 
 - **Telefone:** verifica o TIPO e a QUANTIDADE(10 ou 11 inteiros) (Ignora " ",-,(,))
   - ✅ **Funcionais:** 21212121212, (21)212121212 e etc
-  - ❌ **Não funcionam(teoricamente):** (teoricamente) 21212121AAA, (21)2121212122121 é (21)21212
+  - ❌ **Não funcionam(teoricamente):** 21212121AAA, (21)2121212122121 é (21)21212
 
 ### verificações de Veiculos:
 - **Placa:** verificação com base nos 2 sistemas de placas (Merco-Sul: LLL NLNN; Antigo: LLLNNNN)
