@@ -45,7 +45,7 @@
   - ✅ **Funcionais:** 12/12/2012 é 18/05/2004
   - ❌ **Não funcionam:** AA/12/2012, 12/12/1500 é 12/12/2026
 
-## ITENS IMUTÁVEIS NO SISTEMA
+## ITENS IMUTÁVEIS NO SISTEMA PELO USER
 
 ### Cliente
 **CPF - Não pode mudar**
