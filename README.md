@@ -58,7 +58,7 @@ Porque:
 Porque:
 - A placa é a identidade do carro
 - Modelo e ano são do jeito que veio de fábrica
-- Se o carro for vendido, transfira para outro dono ou excluir o veiculo.
+- Se o carro for vendido, transfira para outro dono.
 
 ### Ordem de Serviço
 **ID e Data- Não pode mudar**
