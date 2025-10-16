@@ -18,7 +18,6 @@
 - Interface de Rede: Intel PRO/1000 MT Desktop (NAT)
 - Som: ICH AC97
 - EFI: Habilitado
-- Aceleração: Paginação Aninhada + Paravirtualização KVM
 
 ## IMPORTANTE PARA O TESTE
 
