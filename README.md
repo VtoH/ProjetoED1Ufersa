@@ -1,5 +1,5 @@
 ╔══════════════════════════════════════════════════════╗
-║       COMO USAR O SISTEMA DA OFICINA - ROCK RURAL    ║
+║                🛠️ OFICINA - ROCK RURAL 🛠️             ║
 ╚══════════════════════════════════════════════════════╝
 
 ## Ambiente de Desenvolvimento
