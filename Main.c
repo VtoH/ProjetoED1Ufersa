@@ -1480,12 +1480,12 @@ void RemoveService() {
         return;
     }
     
-    // Copiar cabeçalho
+    
     if (fgets(line, sizeof(line), arquivoOriginal) != NULL) {
         fprintf(arquivoTemp, "%s", line);
     }
     
-    // Processar cada linha
+    
     while (fgets(line, sizeof(line), arquivoOriginal) != NULL) {
         char lineCopy[600];
         strcpy(lineCopy, line);
@@ -1517,12 +1517,12 @@ void RemoveService() {
                     printf("Ordem removida com sucesso!\n");
                     // Não copia esta linha para o arquivo temporário = REMOÇÃO
                 } else {
-                    // Copia a linha normalmente (usuário cancelou)
+                    
                     fprintf(arquivoTemp, "%s", line);
                     printf("Remocao cancelada.\n");
                 }
             } else {
-                // Copia a linha normalmente (não é o ID procurado)
+                
                 fprintf(arquivoTemp, "%s", line);
             }
         } else {
@@ -1597,12 +1597,10 @@ void EditService() {
     printf("Descrição atual: %s\n", ordem->DescProblem);
     
     struct ordemServico ordemEditada;
-    // Copiar dados imutáveis
     ordemEditada.id = ordem->id;
     strcpy(ordemEditada.Placa, ordem->Placa);
     strcpy(ordemEditada.DataEntrada, ordem->DataEntrada);
     
-    // Editar status
     printf("\n=== EDITAR STATUS ===\n");
     printf("0 - Aguardando Avaliação\n");
     printf("1 - Em Reparo\n");
@@ -1621,18 +1619,16 @@ void EditService() {
             ordemEditada.status = ordem->status;
         }
     } else {
-        ordemEditada.status = ordem->status; // Mantém o atual
+        ordemEditada.status = ordem->status; 
     }
     
-    // Editar descrição do problema
     printf("\nNova descrição do problema (atual: %s): ", ordem->DescProblem);
     fgets(ordemEditada.DescProblem, sizeof(ordemEditada.DescProblem), stdin);
     ordemEditada.DescProblem[strcspn(ordemEditada.DescProblem, "\n")] = '\0';
     if (strlen(ordemEditada.DescProblem) == 0) {
-        strcpy(ordemEditada.DescProblem, ordem->DescProblem); // Mantém o atual
+        strcpy(ordemEditada.DescProblem, ordem->DescProblem); 
     }
     
-    // Verificar se realmente houve mudança
     if (ordemEditada.status == ordem->status && 
         strcmp(ordemEditada.DescProblem, ordem->DescProblem) == 0) {
         printf("Nenhuma alteração realizada.\n");
@@ -1658,7 +1654,6 @@ void EditService() {
         return;
     }
     
-    // Abordagem simples: remover a ordem antiga e adicionar a nova
     FILE *arquivoOriginal = fopen("ordens_servico.csv", "r");
     if (arquivoOriginal == NULL) {
         printf("Erro ao abrir arquivo de ordens de serviço!\n");
@@ -1674,12 +1669,10 @@ void EditService() {
         return;
     }
     
-    // Copiar cabeçalho
     if (fgets(line, sizeof(line), arquivoOriginal) != NULL) {
         fprintf(arquivoTemp, "%s", line);
     }
     
-    // Processar cada linha
     bool found = false;
     while (fgets(line, sizeof(line), arquivoOriginal) != NULL) {
         char lineCopy[600];
@@ -1697,7 +1690,6 @@ void EditService() {
             
             if (currentID == id) {
                 found = true;
-                // Escreve os dados atualizados
                 if (strchr(ordemEditada.DescProblem, ',') != NULL) {
                     fprintf(arquivoTemp, "%s,%d,%d,\"%s\",%s\n",
                             ordemEditada.Placa,
@@ -1714,7 +1706,6 @@ void EditService() {
                             ordemEditada.DataEntrada);
                 }
             } else {
-                // Copia a linha normalmente
                 fprintf(arquivoTemp, "%s", line);
             }
         } else {
@@ -1732,7 +1723,6 @@ void EditService() {
         return;
     }
     
-    // Substituir arquivo original pelo temporário
     if (remove("ordens_servico.csv") != 0) {
         printf("Erro ao remover arquivo original!\n");
         free(ordem);
@@ -1778,7 +1768,6 @@ void HistoricoServicosVeiculo() {
     // Limpar arquivo anterior
     remove("historico_veiculo.txt");
     
-    // Escrever cabeçalho
     FILE *txtFile = fopen("historico_veiculo.txt", "w");
     if (txtFile == NULL) {
         printf("Erro ao criar arquivo de relatório!\n");
@@ -2044,7 +2033,6 @@ void ClientesRecorrentes() {
     ClienteCount clientes[1000];
     int numClientes = 0;
 
-    // Ler clientes
     char linha[300];
     fgets(linha, sizeof(linha), arquivoClientes);
     
@@ -2066,7 +2054,6 @@ void ClientesRecorrentes() {
     }
     fclose(arquivoClientes);
 
-    // Contar ordens por cliente
     fgets(linha, sizeof(linha), arquivoOrdens);
     
     while (fgets(linha, sizeof(linha), arquivoOrdens) != NULL) {
@@ -2097,7 +2084,6 @@ void ClientesRecorrentes() {
     fclose(arquivoOrdens);
     fclose(arquivoVeiculos);
 
-    // Ordenar clientes
     for (int i = 0; i < numClientes - 1; i++) {
         for (int j = i + 1; j < numClientes; j++) {
             if (clientes[i].count < clientes[j].count) {
@@ -2108,7 +2094,6 @@ void ClientesRecorrentes() {
         }
     }
 
-    // Escrever cabeçalho da tabela
     escreverRelatorio("clientes_recorrentes.txt", "Ranking de Clientes Mais Recorrentes:\n");
     escreverRelatorio("clientes_recorrentes.txt", "Pos | Nome                     | CPF           | Ordens\n");
     escreverRelatorio("clientes_recorrentes.txt", "----|--------------------------|---------------|-------\n");
@@ -2224,6 +2209,7 @@ void exibirMenu() {
     printf("\nEscolha uma opção: ");
 };
 
+//menu dos clientes, opções de adicionar, remover ou editar
 void menuClientes() {
     int c;
     int opcao;
@@ -2259,6 +2245,7 @@ void menuClientes() {
     } while (opcao != 4);
 };
 
+//menu dos veículos, opções adicionar, remover, transferir ou listar 
 void menuVeiculos() {
     int opcao;
     int c;
@@ -2298,6 +2285,7 @@ void menuVeiculos() {
     } while (opcao != 5);
 };
 
+//menu dos serviços, opções de adicionar ou remover, editar,
 void menuServicos() {
     int c;
     int opcao;
@@ -2333,6 +2321,7 @@ void menuServicos() {
     } while (opcao != 4);
 };
 
+//obtendo relatório, opções de histórico, acessar a ordem de serviço por data, veículos do cliente, relatório por status, perfis de clientes (os mais recorrentes)
 void menuRelatorios() {
     int c;
     int opcao;
